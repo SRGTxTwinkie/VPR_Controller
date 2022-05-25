@@ -19,7 +19,7 @@ class VPRController:
 
         self.currentTabState = self._determinePage()
 
-    def _determinePage(self):
+    def _determinePage(self) -> None:
         edit3Text = self.vpReference.Edit3.window_text()
         if len(edit3Text) == 12 or len(edit3Text) == 0:
             print("VPR Form Selected")
@@ -30,7 +30,10 @@ class VPRController:
             print("If wrong - Call invertTabState().")
             return VPRTypes.VPR_X12
 
-    def invertTabState(self):
+    def logCurrentState(self) -> None: 
+        print(f"Current Tab State: {self.currentTabState}")
+
+    def invertTabState(self) -> None:
         '''
         Cycles tab state
         '''
@@ -41,13 +44,16 @@ class VPRController:
             self.tabState = VPRTypes.VPR_FORM
             print("Tab State: VPR Form")
 
-    def updateClaimNum(self, claimNum:str, search:bool=False, checkWrongClaim:bool=True, timeout:float|int=3, log:bool=False):
+    def updateClaimNum(self, claimNum:str, search:bool=False, checkWrongClaim:bool=True, timeout:float|int=3, log:bool=False) -> bool:
         '''
         Updates field labeled "DCN" with arg -> claimNum
         args:
             claimNum:str -> updated claim number
             search:bool=False -> click on search button
             log:bool=False -> print log information
+        return:
+            True: claim number updated and no error
+            False: error updating claim number/claim number not updated
         '''        
         for _ in range(20): # Delete all in field before updating
             self.vpReference.Edit0.type_keys("{BACKSPACE}")
@@ -65,12 +71,14 @@ class VPRController:
         
         return True
     
-    def returnX12(self, printOut:bool=False, log:bool=False):
+    def returnX12(self, printOut:bool=False, log:bool=False) -> str:
         '''
-        returnx x12 data
+        returns x12 data
         args:
             printOut:bool=False -> print x12 data to console
             log:bool=False -> print log information
+        return:
+            x12:str -> x12 data
         '''
         self.openX12()
 
@@ -79,7 +87,7 @@ class VPRController:
         if log: print("X12 Data Procured")
         return x12
 
-    def openX12(self):
+    def openX12(self) -> None:
         '''
         opens the x12 data tab
         '''
@@ -90,7 +98,7 @@ class VPRController:
         self.vpReference.type_keys("{VK_LEFT}")
         self.currentTabState = VPRTypes.VPR_X12
 
-    def openForm(self):
+    def openForm(self) -> None:
         '''
         opens the form data tab
         '''

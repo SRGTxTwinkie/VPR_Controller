@@ -34,10 +34,12 @@ class VPRController:
         '''
         Cycles tab state
         '''
-        if self.tabState == VPRTypes.VPR_FORM:
-            self.tabState = VPRTypes.VPR_X12
+        if self.currentTabState == VPRTypes.VPR_FORM:
+            self.curentTabState = VPRTypes.VPR_X12
+            print("Tab State: VPR X12")
         else:
             self.tabState = VPRTypes.VPR_FORM
+            print("Tab State: VPR Form")
 
     def updateClaimNum(self, claimNum:str, search:bool=False, checkWrongClaim:bool=True, timeout:float|int=3, log:bool=False):
         '''

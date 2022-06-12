@@ -1,7 +1,5 @@
 from enum import Enum
-from re import T
-from pywinauto import application, ElementAmbiguousError
-from time import sleep
+from pywinauto import application
 
 class VPRTypes(Enum):
     VPR_FORM = 0
@@ -9,11 +7,15 @@ class VPRTypes(Enum):
 
 
 class VPRController:
-    def __init__(self) -> None:
+    def __init__(self, old=False) -> None:
         self.applicationReference = application.Application()
         try:
-            self.reference = self.applicationReference.connect(title_re="Viewer Printer")
-            self.vpReference = self.reference.ViewerPrinter
+            if not old:
+                self.reference = self.applicationReference.connect(title_re="^.*VwrPr")
+                self.vpReference = self.reference["Untitled - VwrPr"]
+            else:
+                self.reference = self.applicationReference.connect(title_re="Viewer Printer")
+                self.vpReference = self.reference["Viewer Printer"]
         except:
             raise Exception("Could not connect to Viewer Printer...\nMaybe not open?\nError Dialouge open?")
 
@@ -55,19 +57,10 @@ class VPRController:
             True: claim number updated and no error
             False: error updating claim number/claim number not updated
         '''        
-        for _ in range(20): # Delete all in field before updating
-            self.vpReference.Edit0.type_keys("{BACKSPACE}")
 
-        self.vpReference.Edit0.type_keys(claimNum)
+        self.vpReference.Edit0.SetEditText(claimNum)
         if search: self.vpReference.SearchButton.click()
         if log: print("Claim Number Updated")
-        if checkWrongClaim:
-            sleep(timeout)
-            try: # Attempt to connect to see if claim number failed to search
-                self.applicationReference.connect(title_re="Viewer Printer") 
-            except ElementAmbiguousError:
-                self.reference.ViewerPrinter.OK.click() # Click OK on error Dialouge
-                return False
         
         return True
     
